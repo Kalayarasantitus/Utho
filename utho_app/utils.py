@@ -8,25 +8,24 @@ from django.conf import settings
 API_KEY = 'iuPxvsDnQpAbNoWFqCKZVjSUeMJBTdXIEmLraglkcwYRGzOfhyHt'
 DC_SLUG = 'innoida'  # Data center slug
 BUCKET_NAME = 'creap2'  # Your actual bucket name
-# UPLOAD_URL = f'https://api.utho.com/v2/objectstorage/{DC_SLUG}/bucket/{BUCKET_NAME}/upload/'
 UPLOAD_URL = f'https://api.utho.com/v2/objectstorage/{DC_SLUG}/bucket/{BUCKET_NAME}/upload/'
 
 
-def upload_image_to_utho(image_file):
+def upload_file_to_utho(file_obj, file_type):
     headers = {
         'Authorization': f'Bearer {API_KEY}',
     }
 
-    unique_filename = f"{uuid.uuid4().hex}_{int(time.time())}.jpg"
+    unique_filename = f"{uuid.uuid4().hex}_{int(time.time())}.{file_obj.name.split('.')[-1]}"
 
     # Save the file temporarily in memory or local storage
     with BytesIO() as temp_file:
-        for chunk in image_file.chunks():  # Save file chunks to a temporary in-memory file
+        for chunk in file_obj.chunks():  # Save file chunks to a temporary in-memory file
             temp_file.write(chunk)
         temp_file.seek(0)
 
         files = {
-            'file': (unique_filename, temp_file, 'image/jpeg')  # Adjust file name and MIME type if necessary
+            'file': (unique_filename, temp_file, 'application/octet-stream')  # Adjust file name and MIME type if necessary
         }
 
         try:
